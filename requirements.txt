@@ -1,0 +1,18 @@
+numpy>=1.26
+scipy>=1.11
+scikit-learn>=1.4
+gemmi>=0.7
+rdkit>=2024.03
+joblib
+tqdm
+requests
+torch>=2.4
+torchani>=2.7
+ase>=3.23
+openmm>=8.1
+openmmml @ git+https://github.com/openmm/openmm-ml.git
+psi4
+openff-toolkit>=0.16
+openff-recharge>=0.5
+openff-units
+mdtraj>=1.10
