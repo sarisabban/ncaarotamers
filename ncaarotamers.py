@@ -543,7 +543,7 @@ def emit_rot_v1(grid, n_chi, tricode, chi_axes_names, model_name,
 	# Common rot_v1 emitter used by all three pipelines. Each pipeline
 	# writes its own 'method' block via method_extra.
 	cols = (
-		[f'r{k+1}' for k in range(n_chi)]
+		#[f'r{k+1}' for k in range(n_chi)]
 		+ ['count', 'prob']
 		+ [f'chi{k+1}' for k in range(n_chi)]
 		+ [f'sig{k+1}' for k in range(n_chi)])
