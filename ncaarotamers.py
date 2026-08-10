@@ -554,8 +554,8 @@ def emit_rot_v1(grid, n_chi, tricode, chi_axes_names, model_name,
 		wells_sorted = sorted(wells, key=lambda w: -w['prob'])
 		for w in wells_sorted:
 			row = []
-			for k in range(n_chi):
-				row.append(int(_state_index(float(w['chi'][k]))))
+			#for k in range(n_chi):
+			#	row.append(int(_state_index(float(w['chi'][k]))))
 			row.append(int(round(w['prob'] * 1e6)))
 			row.append(round(float(w['prob']), 6))
 			for k in range(n_chi):
