@@ -37,7 +37,11 @@ sfxn = get_score_function()
 mm = MoveMap(); mm.set_bb(False); mm.set_chi(False); mm.set_chi(2, True)
 mini = MinMover(mm, sfxn, 'lbfgs_armijo_nonmonotone', 0.01, True)
 grid = [a * STEP for a in range(int(360.0 / STEP))]
-fold = lambda a, p: a if p is None else ((a + p / 2.0) % p) - p / 2.0
+# Fold a torsion onto its symmetry-unique range, treating an ordinary
+# torsion as the 360 degree case. The wrap is essential: pose.chi() returns
+# the accumulated angle, and the minimiser can wind a torsion past a full
+# turn, so raw values may fall far outside -180..180.
+fold = lambda a, p: ((a + (p or 360.0) / 2.0) % (p or 360.0)) - (p or 360.0) / 2.0
 near = lambda a: min(range(3), key=lambda i:
 	abs(((a - WELLS[i] + 180.0) % 360.0) - 180.0))
 
