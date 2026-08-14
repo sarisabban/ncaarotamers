@@ -3,7 +3,7 @@
 # following the MakeRotLib protocol (Renfrew et al., PLoS ONE 2012).
 # Rosetta's own make_rot_lib application is not distributed with PyRosetta,
 # so the protocol is reimplemented here on the public PyRosetta API.
-#   python3 NCAA_script.py ORN > ORN.json
+#   python3 NCAA_PyRosetta.py ORN > ORN.json
 
 import sys, json, math, itertools, pyrosetta
 from pyrosetta import get_score_function, MoveMap
@@ -24,7 +24,13 @@ base, variant, sym = RES[tricode]
 pyrosetta.init('-mute all -extra_patch_fa '
 	'patches/thr_phos3.txt patches/tyr_phos4.txt', silent=True)
 
-pose = pyrosetta.pose_from_sequence('AAA', 'fa_standard')
+# The residue is capped as Ace-X-NMe, matching MakeRotLib. Acetyl and
+# N-methylamide are separate, electrically neutral residues, so the only
+# formal charge in the system is the side chain's own; a plain Ala-X-Ala
+# tripeptide would instead carry NH3+ and COO- termini two residues either
+# side of the scanned chi, biasing the torsional energies of a charged
+# side chain such as ornithine or a phosphorylated residue.
+pose = pyrosetta.pose_from_sequence('X[ACE]AX[NME]', 'fa_standard')
 rts = ChemicalManager.get_instance().residue_type_set('fa_standard')
 rt = rts.name_map(base)
 if variant:
@@ -50,6 +56,7 @@ for i in range(36):
 	for j in range(36):
 		pose.set_phi(2, -180 + i * 10)
 		pose.set_psi(2, -180 + j * 10)
+		assert abs(((pose.psi(2) - (-180 + j * 10)) + 180) % 360 - 180) < 0.01
 		minima = []
 		for combo in itertools.product(grid, repeat=n_chi):
 			for k, c in enumerate(combo): pose.set_chi(k + 1, 2, c)
@@ -81,6 +88,8 @@ for i in range(36):
 			table.append([c, round(p, 6)] + [round(x, 2) for x in chi]
 				+ [round(x, 2) for x in sig])
 		offsets.append(len(table))
+	print('%s phi %d/36 rows=%d' % (tricode, i + 1, len(table)),
+		file=sys.stderr, flush=True)
 
 json.dump({'tricode': tricode, 'n_chi': n_chi, 'rotamers': {
 	'columns': ['count', 'prob']
